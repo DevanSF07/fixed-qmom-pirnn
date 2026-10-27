@@ -18,3 +18,4 @@ outputs/data_growth_only_diagnostic/
 outputs/small_data/
 outputs/evaluation/*.npz
 outputs/pirnn/*.pt
+!outputs/pirnn/best.pt

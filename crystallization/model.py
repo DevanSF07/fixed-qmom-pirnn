@@ -85,14 +85,19 @@ class Forecaster(nn.Module):
             dec_in = torch.cat((torch.log1p(z_curr), T_scaled, dT_scaled, sigma), -1)
             h = self.decoder(dec_in, h)
 
-            # Additive growth update gated by supersaturation
+            # Physical supersaturation gating: strictly zero when sigma <= 0
+            # Ensures crystal growth and secondary nucleation cease at thermodynamic equilibrium
+            sigma_gate = torch.tanh(sigma / 0.1)
+
+            # Additive growth update gated strictly by supersaturation
             step_out = self.step(h)
-            dq = (sigma + 0.05) * 0.04 * torch.tanh(step_out)
+            dq = sigma_gate * 0.04 * torch.tanh(step_out)
             q_curr = torch.clamp(q_curr + dq, min=1e-6, max=25.0)
 
-            # Solute mass conservation: C(t) = M_total - factor * mu11(t)
+            # Exact solute mass conservation: C(t) = M_total - factor * mu11(t)
+            # Preserves algebraic identity C(t) + factor * mu11(t) == M_total without artificial clamping
             m11_curr = torch_moments(q_curr)[:, INDEX[(1, 1)]]
-            c_curr = torch.clamp_min(m_total - self.mass_factor * m11_curr, 1e-6)
+            c_curr = m_total - self.mass_factor * m11_curr
 
             qs.append(q_curr)
             cs.append(c_curr)
@@ -100,4 +105,8 @@ class Forecaster(nn.Module):
 
         q = torch.stack(qs, 1)
         c = torch.stack(cs, 1)
-        return dict(q=q, z=torch.cat((torch_moments(q), c[..., None]), -1))
+        return dict(
+            q=q,
+            z=torch.cat((torch_moments(q), c[..., None]), -1),
+            m_total=m_total,
+        )

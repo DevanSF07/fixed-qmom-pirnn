@@ -73,7 +73,27 @@ from .physics import (
 from .profiles import from_metadata
 
 
-def reconstruct_quadrature(m_target, q_guess, maxiter=300, gtol=1e-8, ftol=1e-15):
+def deterministic_prior(m_target):
+    """
+    Construct a deterministic initial quadrature guess q = [W1..3, X1..3, Y1..3]
+    purely from the target moments, ensuring independent, repeatable optimization.
+    """
+    m = np.asarray(m_target, dtype=float)
+    w_sum = m[0]
+    l_mean = m[1] / max(m[0], 1e-12)
+    w_mean = m[2] / max(m[0], 1e-12)
+    l_var = max(m[3] / max(m[0], 1e-12) - l_mean**2, 1e-10)
+    w_var = max(m[5] / max(m[0], 1e-12) - w_mean**2, 1e-10)
+    l_std = np.sqrt(l_var)
+    w_std = np.sqrt(w_var)
+
+    w = np.array([w_sum * 0.25, w_sum * 0.50, w_sum * 0.25])
+    x = np.array([max(l_mean - 0.8 * l_std, 1e-4), l_mean, l_mean + 0.8 * l_std])
+    y = np.array([max(w_mean - 0.8 * w_std, 1e-4), w_mean, w_mean + 0.8 * w_std])
+    return np.r_[w, x, y]
+
+
+def reconstruct_quadrature(m_target, q_guess=None, maxiter=300, gtol=1e-8, ftol=1e-15):
     """
     Reconstruct positive 3-node quadrature q = [W1..3, X1..3, Y1..3] from 9 target moments.
 
@@ -85,7 +105,10 @@ def reconstruct_quadrature(m_target, q_guess, maxiter=300, gtol=1e-8, ftol=1e-15
         grad_q = 2 * A(q)^T @ ((M(q) - M_target) / (M_target + 1e-12)^2)
     """
     m_target = np.asarray(m_target, dtype=float)
-    denom = m_target + 1e-12
+    if m_target.shape != (9,) or not np.isfinite(m_target).all() or np.any(m_target <= 0):
+        raise QuadratureFailure("Invalid nonpositive or nonfinite moment target", moments=m_target.tolist())
+
+    denom = np.maximum(np.abs(m_target), 1e-12)
 
     def obj(q):
         m_calc = moments(q)
@@ -99,14 +122,23 @@ def reconstruct_quadrature(m_target, q_guess, maxiter=300, gtol=1e-8, ftol=1e-15
 
     bounds = [(1e-7, None)] * 9
 
+    # Use supplied initial guess if finite and positive; otherwise use deterministic prior
+    if q_guess is not None and np.isfinite(q_guess).all() and np.all(q_guess > 0):
+        initial_guess = np.asarray(q_guess, dtype=float)
+    else:
+        initial_guess = deterministic_prior(m_target)
+
     res = minimize(
         obj,
-        q_guess,
+        initial_guess,
         jac=grad,
         bounds=bounds,
         method="L-BFGS-B",
         options={"maxiter": maxiter, "ftol": ftol, "gtol": gtol},
     )
+
+    if not np.isfinite(res.x).all():
+        raise QuadratureFailure("Optimization returned nonfinite quadrature", status=res.status, message=res.message)
 
     m_rec = moments(res.x)
     rel_errors = np.abs(m_rec - m_target) / denom
@@ -117,13 +149,14 @@ def reconstruct_quadrature(m_target, q_guess, maxiter=300, gtol=1e-8, ftol=1e-15
     best_max_err = max_err
     best_mean_err = mean_err
     best_ok = res.success
+    best_msg = res.message
 
-    # Multi-start refinement if local optimum error exceeds 1%
-    if max_err > 0.01:
+    # Multi-start refinement if relative error exceeds 0.5%
+    if max_err > 0.005:
+        # Candidate 2: deterministic bimodal split (fine nuclei + intermediate + seed)
         w_sum = m_target[0]
         l_mean = m_target[1] / max(m_target[0], 1e-12)
         w_mean = m_target[2] / max(m_target[0], 1e-12)
-        # Bimodal split guess: fine nuclei + intermediate + seed
         g_refine = np.r_[
             w_sum * 0.6, w_sum * 0.25, w_sum * 0.15,
             l_mean * 0.2, l_mean * 1.0, l_mean * 1.8,
@@ -137,17 +170,24 @@ def reconstruct_quadrature(m_target, q_guess, maxiter=300, gtol=1e-8, ftol=1e-15
             method="L-BFGS-B",
             options={"maxiter": maxiter, "ftol": ftol, "gtol": gtol},
         )
-        errs2 = np.abs(moments(res2.x) - m_target) / denom
-        if np.max(errs2) < max_err:
-            best_x = res2.x
-            best_max_err = float(np.max(errs2))
-            best_mean_err = float(np.mean(errs2))
-            best_ok = res2.success
+        if np.isfinite(res2.x).all():
+            errs2 = np.abs(moments(res2.x) - m_target) / denom
+            max_err2 = float(np.max(errs2))
+            if max_err2 < best_max_err:
+                best_x = res2.x
+                best_max_err = max_err2
+                best_mean_err = float(np.mean(errs2))
+                best_ok = res2.success
+                best_msg = res2.message
+
+    if not np.isfinite(best_max_err):
+        raise QuadratureFailure("Nonfinite reconstruction error", status=best_ok, message=best_msg)
 
     # Canonicalize node ordering by crystal length X (X1 <= X2 <= X3)
+    # Moving linked triples [W, X, Y] together
     order = np.argsort(best_x[3:6])
     q_canonical = np.r_[best_x[:3][order], best_x[3:6][order], best_x[6:9][order]]
-    return q_canonical, best_max_err, best_mean_err, best_ok
+    return q_canonical, best_max_err, best_mean_err, best_ok, best_msg
 
 
 def simulate(
@@ -288,11 +328,12 @@ def simulate(
         }
 
     # PRODUCTION SOLVER: MOMENT INTEGRATION + QUADRATURE RECONSTRUCTION
-    q0 = z0[:9].copy()
+    q0, err0, _, _, _ = reconstruct_quadrature(moments(z0[:9]), z0[:9])
     m0 = moments(q0)
     y0 = np.r_[m0, z0[9], z0[10]]
 
-    anchor = {"t": 0.0, "q": q0.copy()}
+    # Fixed accepted anchor: initialized at t=0, updated ONLY at verified segment boundaries
+    anchor_q = q0.copy()
     max_rhs_err = 0.0
     rhs_eval_count = 0
 
@@ -312,21 +353,19 @@ def simulate(
             # True physical liquid temperature at time t (no drift, no overwriting)
             T_true = float(profile.temperature(t))
 
-            q, max_err, _, _ = reconstruct_quadrature(m, anchor["q"])
+            # Controlled reconstruction using fixed accepted anchor from segment start
+            # No mutable anchor update occurs during trial steps!
+            q, max_err, _, _, msg = reconstruct_quadrature(m, anchor_q)
             max_rhs_err = max(max_rhs_err, max_err)
 
             if max_err > max_reconstruction_error:
                 raise QuadratureFailure(
-                    f"Reconstruction error ({max_err:.4e}) exceeded limit ({max_reconstruction_error})",
+                    f"RHS reconstruction error ({max_err:.4e}) exceeded limit ({max_reconstruction_error})",
                     time_s=float(t),
                     reconstruction_error=max_err,
                     moments=m.tolist(),
+                    optimizer_message=msg,
                 )
-
-            # Anchor updates only on forward monotonic progress
-            if t > anchor["t"]:
-                anchor["t"] = t
-                anchor["q"] = q.copy()
 
             # Physical kinetics evaluated at exact liquid temperature
             dm = moment_rates(q, c, T_true, par)
@@ -368,10 +407,16 @@ def simulate(
         # Evaluates the actual final state at right to begin the next stage
         last_y = sol.sol(right)
 
-        # Update anchor to exact quadrature at boundary right
-        q_right, err_right, _, _ = reconstruct_quadrature(last_y[:9], anchor["q"])
-        anchor["t"] = right
-        anchor["q"] = q_right.copy()
+        # Update anchor_q ONLY at the verified, accepted boundary right
+        q_right, err_right, _, _, msg_right = reconstruct_quadrature(last_y[:9], anchor_q)
+        if err_right > max_reconstruction_error:
+            raise QuadratureFailure(
+                f"Boundary reconstruction error ({err_right:.4e}) exceeded limit ({max_reconstruction_error})",
+                time_s=float(right),
+                reconstruction_error=err_right,
+                optimizer_message=msg_right,
+            )
+        anchor_q = q_right.copy()
 
     m = np.vstack(all_sol_m)
     c = np.concatenate(all_sol_c)
@@ -380,18 +425,19 @@ def simulate(
     # Reconstruct positive quadrature at all observation times
     q_recorded = []
     rec_errors = []
-    q_guess = q0.copy()
+    prev_accepted_q = q0.copy()
 
     for m_target in m:
-        q_val, max_err, mean_err, _ = reconstruct_quadrature(m_target, q_guess)
+        q_val, max_err, mean_err, ok, msg = reconstruct_quadrature(m_target, prev_accepted_q)
         if max_err > max_reconstruction_error:
             raise QuadratureFailure(
                 f"Observation quadrature reconstruction error ({max_err:.4e}) exceeded limit",
                 reconstruction_error=max_err,
+                optimizer_message=msg,
             )
         q_recorded.append(q_val)
         rec_errors.append(max_err)
-        q_guess = q_val.copy()
+        prev_accepted_q = q_val.copy()
 
     q_array = np.array(q_recorded)
     z = np.column_stack((q_array, c, T))
