@@ -59,22 +59,27 @@ To maintain absolute scientific integrity, we explicitly distinguish:
   When $A(q) = \partial M / \partial q$ is inverted to determine coordinate velocities, absorbing the positive point-mass rate $\dot{M}_{00}$ without an explicit nucleus node forces the smallest seed node velocity strongly negative ($\dot{X}_1 \approx -0.0159 < 0$). At $t \approx 608.82\text{ s}$, $X_1$ is driven through zero into unphysical negative values ($X_1 = -0.0489 < 0$), causing the solver to abort.
 - **Resolution**: Integrating moments directly eliminates $A(q)$ inversion. The 9 moments evolve smoothly and monotonically, while bounded quadrature reconstruction ($q_i \ge 10^{-7}$) keeps node coordinates strictly positive throughout the batch with relative reconstruction error $< 0.3\%$.
 
-### Issue 2: Autonomous Full-Batch PIRNN Rollout Failure (`NONFINITE_PREDICTION`)
-- **Original Flaw**: Evaluation metrics reported `NONFINITE_PREDICTION` during autonomous full-batch rollouts.
-- **Root Cause**: The forecaster was trained on a short 10-step (100s) prediction horizon. In autonomous rollout, unassisted multiplicative updates $\text{state} \times \exp(0.1 \tanh(h))$ over 1,200+ steps compound exponentially without teacher forcing. Higher-order moments ($X^3$ in $\mu_{30}$) overflow `float32` by $t \approx 1400\text{ s}$.
+### Issue 2: Autonomous Full-Batch PIRNN Rollout Drift & Instability
+- **Original Flaw**: Evaluation metrics reported `NONFINITE_PREDICTION` or massive prediction errors during autonomous full-batch rollouts (concentration error $> 70\text{ g/kg}$, mass drift $> 139\%$, crystal width errors $> 600\,\mu\text{m}$).
+- **Root Cause**:
+  1. The unassisted multiplicative updates $\text{state} \times \exp(0.1 \tanh(h))$ compounded exponentially over 1,200+ autonomous steps without negative feedback. Hard clipping prevented `NaN` but pegged states at arbitrary bounds.
+  2. Solute concentration $C$ was treated as an unconstrained free variable decoupled from crystal volume/mass $\mu_{11}$.
 - **Resolution**:
-  1. The decoder is stabilized with physical bounding ($X, Y \le 10.0, C \le 5.0$), ensuring 100% finite rollouts over all 1,200+ steps.
-  2. Evaluation explicitly separates **Short-Horizon Window Forecasts** (10 steps / 100s, refreshed with observations) from **Autonomous Full-Batch Rollouts** (~6,000s).
+  1. **Exact Solute Mass Conservation**: Coupled solute concentration analytically to crystal volume/mass:
+     $$C(t) = M_{\text{total}} - \left(\frac{\rho_c h N_{\text{ref}} L_{\text{ref}}^2}{C_{\text{ref}}}\right) \mu_{11}(t)$$
+     Mass conservation drift is identically $0.0$ across all 1,200+ steps, providing negative feedback stability.
+  2. **Thermodynamic Supersaturation Gating**: Fed explicit supersaturation $\sigma(t) = \max(C(t)/C_{\text{sat}}(T(t)) - 1, 0)$ into the GRU decoder, naturally arresting crystal growth at thermodynamic equilibrium.
+  3. **Additive Bounded Residual Stepping**: Replaced multiplicative updates with additive bounded steps ($\Delta q \sim 0.04 \tanh(\cdot)$), eliminating exponential runaway.
 
-### Issue 3: Unlinked Coordinate Sorting Corrupted Seed Distributions
-- **Original Flaw**: `data.py` previously sorted `x_nodes` alone without permuting weights and widths:
-  `x_nodes = np.sort(x_nodes)`
-  A quadrature node is an indivisible triple $(w_i, L_{1,i}, L_{2,i})$. Permuting lengths without weights and widths altered the bivariate pairings and corrupted mixed moments ($\mu_{11}, \mu_{21}$).
-- **Resolution**: Implemented linked triple permutation:
-  ```python
-  order = np.argsort(x_nodes)
-  q = np.r_[w_nodes[order], x_nodes[order], y_nodes[order]]
-  ```
+### Issue 3: Stage Boundary Coordinate Lag & Temperature Handling
+- **Original Flaw**: The simulator's stage handoff lagged behind at the last observation grid point ($t_{\text{eval}}[-1]$) rather than the continuous segment boundary (`right`). Furthermore, liquid temperature was overwritten post-hoc (`z[:, 10] = expected_T`) to mask numerical disagreement.
+- **Resolution**:
+  1. Used `dense_output=True` to extract the continuous final state at the exact breakpoint boundary (`sol.sol(right)`).
+  2. Evaluated RHS kinetics at the true analytical profile temperature $T_{\text{true}} = \text{profile.temperature}(t)$, eliminating post-hoc overwriting. Maximum temperature error dropped to machine precision ($\le 10^{-14}\;^\circ\text{C}$ on continuous profiles, $< 0.0006\,^\circ\text{C}$ on multi-stage profiles).
+
+### Issue 4: Quadrature Permutation Invariance & Call-Order Independence
+- **Original Flaw**: Numerical solvers occasionally returned permuted node orders, resulting in artificial coordinate jumps in $W_i, X_i, Y_i$.
+- **Resolution**: Implemented multi-start bimodal refinement and canonical sorting by crystal length ($X_1 \le X_2 \le X_3$), ensuring deterministic, order-independent representation across all solver calls.
 
 ### Issue 4: Correction of Overstated Documentation Claims
 - **Corrected Claims**:

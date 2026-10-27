@@ -43,7 +43,9 @@ def load_model(checkpoint):
     ck = torch.load(checkpoint, map_location="cpu", weights_only=True)
     cfg = ck["config"]
     set_orders(cfg["moments"])
-    model = Forecaster(cfg["training"]["hidden"])
+    from .physics import Parameters
+    par = Parameters(**cfg["physics"])
+    model = Forecaster(cfg["training"]["hidden"], par=par)
     model.load_state_dict(ck["model"])
     model.eval()
     return model, cfg
@@ -77,7 +79,7 @@ def evaluate(
     out="outputs/evaluation",
     rollouts=2,
 ):
-    torch.set_num_threads(2)
+    torch.set_num_threads(4)
     model, cfg = load_model(checkpoint)
     s = cfg["training"]
     ds = Windows(data, "test", s["history"], s["horizon"])

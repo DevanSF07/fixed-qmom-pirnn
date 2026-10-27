@@ -14,14 +14,14 @@ from .losses import losses
 def train(data='outputs/data',out='outputs/pirnn',config='config.json',epochs=None):
     cfg,par=load_config(config);s=cfg['training'];epochs=epochs if epochs is not None else s['epochs']
     if epochs<1:raise ValueError('epochs must be positive')
-    seed=cfg['random_seed'];random.seed(seed);np.random.seed(seed);torch.manual_seed(seed);torch.set_num_threads(2)
+    seed=cfg['random_seed'];random.seed(seed);np.random.seed(seed);torch.manual_seed(seed);torch.set_num_threads(4)
     tr=Windows(data,'train',s['history'],s['horizon']);va=Windows(data,'val',s['history'],s['horizon'])
     if cfg['physics']!=tr.cfg['physics'] or cfg['moments']!=tr.cfg['moments']:raise ValueError('Dataset physics differs from training configuration')
     if cfg['noise']!=tr.cfg['noise']:raise ValueError('Noise configuration differs from saved observations')
     if not np.isclose(tr.dt,cfg['solver']['sample_interval_s']):raise ValueError('Sampling interval mismatch')
     if tr.cfg['physics']!=va.cfg['physics']:raise ValueError('Validation parameters differ')
     out=Path(out);out.mkdir(parents=True,exist_ok=True)
-    model=Forecaster(s['hidden']);opt=torch.optim.Adam(model.parameters(),lr=s['learning_rate'])
+    model=Forecaster(s['hidden'],par=par);opt=torch.optim.Adam(model.parameters(),lr=s['learning_rate'])
     logs=[];best=float('inf');failures=len(json.loads((Path(data)/'manifest.json').read_text())['failed'])
     print(f'Train windows={len(tr)}, val windows={len(va)}, failed batches={failures}. Metrics cover successful cases only.')
     for epoch in range(epochs):
