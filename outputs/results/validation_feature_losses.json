@@ -1,0 +1,106 @@
+{
+  "validation_windows_count": 13835,
+  "validation_steps_count": 138350,
+  "features": {
+    "mu00": {
+      "scaled_mse": 0.0005024782230137253,
+      "scaled_rmse": 0.022416026030804954,
+      "scaled_mae": 0.01696088674506169,
+      "normalized_rmse_pct": 5.4190701589284265,
+      "normalized_mae_pct": 4.100291242650201,
+      "physical_rmse": 2241602603.0804954,
+      "physical_mae": 1696088674.506169,
+      "physical_unit": "m^(0-3)"
+    },
+    "mu10": {
+      "scaled_mse": 0.023175258345565976,
+      "scaled_rmse": 0.15223422199218536,
+      "scaled_mae": 0.11388071368134405,
+      "normalized_rmse_pct": 1.716319763798371,
+      "normalized_mae_pct": 1.2839144644939797,
+      "physical_rmse": 1522342.2199218536,
+      "physical_mae": 1138807.1368134404,
+      "physical_unit": "m^(1-3)"
+    },
+    "mu01": {
+      "scaled_mse": 0.00030056886420085695,
+      "scaled_rmse": 0.01733692199327369,
+      "scaled_mae": 0.013698491794691648,
+      "normalized_rmse_pct": 3.093891563829242,
+      "normalized_mae_pct": 2.444588965516696,
+      "physical_rmse": 173369.21993273692,
+      "physical_mae": 136984.91794691648,
+      "physical_unit": "m^(1-3)"
+    },
+    "mu20": {
+      "scaled_mse": 4.815265672492775,
+      "scaled_rmse": 2.1943713615732356,
+      "scaled_mae": 1.506723431655979,
+      "normalized_rmse_pct": 1.703498383357039,
+      "normalized_mae_pct": 1.1696748211988859,
+      "physical_rmse": 2194.371361573236,
+      "physical_mae": 1506.723431655979,
+      "physical_unit": "m^(2-3)"
+    },
+    "mu11": {
+      "scaled_mse": 0.03781080320999502,
+      "scaled_rmse": 0.1944500018256493,
+      "scaled_mae": 0.14091919924233165,
+      "normalized_rmse_pct": 1.7757383548098558,
+      "normalized_mae_pct": 1.2868893014877434,
+      "physical_rmse": 194.4500018256493,
+      "physical_mae": 140.91919924233164,
+      "physical_unit": "m^(2-3)"
+    },
+    "mu02": {
+      "scaled_mse": 0.0005665024589930552,
+      "scaled_rmse": 0.023801312127549927,
+      "scaled_mae": 0.018677833132852404,
+      "normalized_rmse_pct": 2.66760526797802,
+      "normalized_mae_pct": 2.093375600160259,
+      "physical_rmse": 23.801312127549927,
+      "physical_mae": 18.677833132852403,
+      "physical_unit": "m^(2-3)"
+    },
+    "mu30": {
+      "scaled_mse": 1175.7398525395463,
+      "scaled_rmse": 34.28906316217383,
+      "scaled_mae": 22.955785607080145,
+      "normalized_rmse_pct": 1.8810445431824596,
+      "normalized_mae_pct": 1.2593186068232902,
+      "physical_rmse": 3.428906316217384,
+      "physical_mae": 2.295578560708015,
+      "physical_unit": "m^(3-3)"
+    },
+    "mu03": {
+      "scaled_mse": 0.001142414062290969,
+      "scaled_rmse": 0.033799616303901575,
+      "scaled_mae": 0.024927246263839728,
+      "normalized_rmse_pct": 2.5570068144391604,
+      "normalized_mae_pct": 1.885794737690076,
+      "physical_rmse": 0.0033799616303901584,
+      "physical_mae": 0.0024927246263839733,
+      "physical_unit": "m^(3-3)"
+    },
+    "mu21": {
+      "scaled_mse": 9.378890175979855,
+      "scaled_rmse": 3.062497375669056,
+      "scaled_mae": 2.087865956935979,
+      "normalized_rmse_pct": 1.8939476364309613,
+      "normalized_mae_pct": 1.2912039780800393,
+      "physical_rmse": 0.30624973756690566,
+      "physical_mae": 0.20878659569359795,
+      "physical_unit": "m^(3-3)"
+    },
+    "c": {
+      "scaled_mse": 9.34048110848771e-07,
+      "scaled_rmse": 0.0009664616447892648,
+      "scaled_mae": 0.0006317711550706036,
+      "normalized_rmse_pct": 0.2734753338146587,
+      "normalized_mae_pct": 0.17876946121858653,
+      "physical_rmse": 0.23195079474942354,
+      "physical_mae": 0.15162507721694488,
+      "physical_unit": "kg/m^3"
+    }
+  }
+}
