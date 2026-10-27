@@ -95,8 +95,7 @@
     "cubic",
     "natural",
     "two_stage",
-    "cool_hold_cool",
-    "random_spline"
+    "cool_hold_cool"
   ],
   "solver": {
     "sample_interval_s": 10.0,
