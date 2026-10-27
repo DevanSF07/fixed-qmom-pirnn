@@ -124,7 +124,7 @@
     "batch_size": 64,
     "epochs": 30,
     "learning_rate": 0.001,
-    "mu00_weight": 3.0,
+    "mu00_weight": 10.0,
     "shape_weight": 1.0,
     "physics_weight": 1.0,
     "mass_weight": 1.0,

@@ -4,7 +4,7 @@ Trapezoidal residuals have time-discretisation error: test sampling sensitivity.
 import torch
 from .physics import torch_moment_rates, INDEX, NREF, LREF, CREF, DEFAULT
 
-def losses(pred, target, T, dt, par=DEFAULT, mu00_weight=3.0, shape_weight=1.0):
+def losses(pred, target, T, dt, par=DEFAULT, mu00_weight=10.0, shape_weight=1.0):
     z = pred['z']
     q = pred['q']
     
