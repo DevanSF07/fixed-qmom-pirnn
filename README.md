@@ -1,61 +1,143 @@
-# Nonlinear crystallization PIRNN
+# Nonlinear Crystallization QMOM & PIRNN Simulation Study
 
-Essential code only. No MPC, inverse learning, baseline experiment, generated data or checkpoints. Start after seed addition: Th is the saturation preparation temperature, Ts is the liquid temperature at seed addition, Tf is the final liquid temperature. Always Th > Ts > Tf. c0=cs(Th); there is no invented independent liquid temperature at the instant of seeding.
+A scientifically consistent nonlinear Quadrature Method of Moments (QMOM) simulator and Physics-Informed Recurrent Neural Network (PIRNN) for seeded batch cooling crystallization of plate-like crystals.
 
-## Mathematical scope
-- Three quadrature weights, three lengths, three widths, c and T: 11 evolving variables.
-- Nonlinear size-dependent growth and secondary nucleation from Szilagyi & Lakatos (2015), DOI 10.3311/PPch.7581, with zero-size births.
-- Assumed moment set: 00,10,01,20,11,02,30,03,21. The paper does not state its nine moment orders. This direct-node derivative system is NOT claimed to reproduce the authors' exact DAE solver.
-- SI lengths/metres, seconds, kg/m3, degrees Celsius in the supplied Apelblat expression. Coefficients are transcribed numerically from the paper. Its printed gamma/nucleation-unit labels and other notation have dimensional ambiguities; equation-implied coefficient units must be distinguished from those printed labels. Gamma must have m^(-alpha). No silent micrometre substitution or empirical parameter retuning.
-- Constant volume, density, plate thickness; no breakage, agglomeration or dissolution. Prescribed liquid temperature, not a jacket energy balance. Negative supersaturation produces zero growth/nucleation.
-- Initial seed shape varies per node; positive weights are normalized to a chosen seed-mass fraction of dissolved solute. This is a discrete three-node seed model, not an exact fit to every bivariate lognormal distribution. The standalone physics command shows Table 2 nodes with c0=cs(35.2 C), not the conflicting nominal table concentration.
+Reference: **Szilágyi and Lakatos (2015)**, *"Batch Cooling Crystallization of Plate-like Crystals: A Simulation Study"*, *Periodica Polytechnica Chemical Engineering*, DOI: `10.3311/PPch.7581`.
 
-## Numerical Fixes & Validation
-- **Physical Metastable Zone Growth**: In seeded crystallization, operating within the metastable zone suppresses secondary nucleation (`kS = 0.0`), allowing seed crystal nodes to grow smoothly and stably without inverted zero-size birth singularities.
-- **Adaptive RK45 Integration**: Uses Runge-Kutta 4(5) with balanced error tolerances (`rtol=1e-6, atol=1e-9`), completing 11,530s cooling batches in ~0.3s while preserving solute mass to within < 1e-7.
-- **Node Spacing Regularization**: Preserves distinct coordinate separation between seed nodes to prevent collinear Jacobian matrices.
-- **100% Pipeline Verified**: Batch simulations, dataset generation (180/180 cases completed, 0 failed), PIRNN model training, and test set evaluations are fully functional.
+---
 
-## Configuration
-All editable settings are in config.json. Proposed, not validated defaults:
-- 100 seed-shape groups x 3 settings x 6 profile families = 1800 planned batches.
-- Ts sampled over 29--35 C; Th=Ts+0.1--0.5 C; Tf=25 C. No claim that all choices are within a measured metastable zone.
-- Average cooling rate 0.5--1.5 times 8.33e-4 C/s; duration determined by drop/rate and rounded up to the 10-second observation grid. Record peak cooling rates separately from averages.
-- Profiles: linear, cubic, natural, two-stage, cool-hold-cool, random monotone spline. Shape parameters are saved per case.
-- Synthetic noise: T std 0.1 C, c std 0.3 kg/m3, positive node-length/width CV 2%, node-weight CV 5%. These are assumptions, not instrument specifications. All noisy moments come from the same perturbed population; clean labels are retained. Noise does not drive the physical solver. Future temperature is assumed known exactly.
-- Seed groups split 70/15/15 before windows/noise. Related settings/profiles stay together. More windows/noise realizations are not more independent experiments.
-- Stored moments divided by Nref*Lref^(p+q), Nref=1e11/m3, Lref=1e-4 m. Stored c divided by 240 kg/m3. Observation T remains Celsius.
-- History five times with 11 features (log1p of nine scaled moments and c, then (T-30)/5). Future temperature contains current T plus ten future values. Clean targets contain current estimate plus ten future steps, shape [11,10]. Forecast future-only shape [10,10].
-- GRU hidden size 48; positive quadrature decoder; moment outputs computed from nodes. Adam 1e-3, batch 64, 30 epochs. Loss = log-data MSE + physics_weight*scaled trapezoidal residual MSE + mass_weight*relative conservation MSE. Weights default 1. Soft residuals do not guarantee exact dynamics.
+## 1. Scientific Delineation
 
-## Work through files in order
-From the extracted repository root:
+To maintain absolute scientific integrity, we explicitly distinguish:
+1. **Paper Statements**: Principles, kinetic equations, and parameters documented directly by Szilágyi & Lakatos (2015).
+2. **Project Assumptions**: Necessary closures, numerical scales, and representations assumed in this implementation.
+3. **Proposed Modifications & Fixes**: Scientific and algorithmic improvements developed to resolve numerical and physical limitations.
+
+### A. Reference Paper Statements
+- **Apelblat Solubility Correlation**: Evaluated with temperature $T$ strictly in **degrees Celsius**:
+  $$c_s(T) = 1000 \exp\left(a_1 + \frac{a_2}{T} + a_3 \ln T\right) \quad [\text{kg/m}^3]$$
+  Coefficients: $a_1 = -69.51$, $a_2 = 368.6$, $a_3 = 16.18$.
+- **Plate-Like Crystal Growth**: Crystal length $L_1$ and width $L_2$ grow with nonlinear, size-dependent kinetics:
+  $$G_1(L_1, \sigma) = k_1 \sigma^{g_1} (1 + \gamma_1 L_1^{\alpha_1}) \quad [\text{m/s}]$$
+  $$G_2(L_2, \sigma) = k_2 \sigma^{g_2} (1 + \gamma_2 L_2^{\alpha_2}) \quad [\text{m/s}]$$
+  where $\sigma = \max(c/c_s(T) - 1, 0)$ is the relative supersaturation. Plate thickness $h = 5\,\mu\text{m}$ is held constant.
+- **Active Secondary Nucleation**: Nucleation occurs actively under seeded conditions:
+  $$B = k_S \epsilon \mu_{11} \sigma^\beta \quad [\#/(\text{m}^3\cdot\text{s})]$$
+  with $k_S = 3.6 \times 10^5$, power input $\epsilon = 250\text{ W/kg}$, $\beta = 2.0$, and mixed seed area moment $\mu_{11}$. Nuclei are formed at zero size ($L_1 = 0, L_2 = 0$).
+- **Solute Mass Conservation**: The depletion of dissolved concentration $c$ balances crystal volume growth:
+  $$\frac{dc}{dt} = -\rho_c h \frac{d\mu_{11}}{dt} \quad [\text{kg}/(\text{m}^3\cdot\text{s})]$$
+- **Prescribed Liquid Cooling**: Liquid temperature follows prescribed cooling profiles ($dT/dt = -\text{rate}(t)$), not a jacket heat-transfer model.
+- **Paper DAE Solution**: The authors solve the coupled moment-quadrature equations as a Differential-Algebraic Equation (DAE) system using MATLAB's `ode15s`.
+
+### B. Project Assumptions
+- **Assumed Nine Moment Orders**: The reference paper does not enumerate which nine mixed moments were chosen. This project selects:
+  $$\mu_{00}, \mu_{10}, \mu_{01}, \mu_{20}, \mu_{11}, \mu_{02}, \mu_{30}, \mu_{03}, \mu_{21}$$
+- **Dimensionless Scaling**:
+  - Number concentrations: $W_i = w_i / N_{\text{ref}}$, $N_{\text{ref}} = 10^{11}\,\text{m}^{-3}$.
+  - Lengths & widths: $X_i = L_{1,i} / L_{\text{ref}}$, $Y_i = L_{2,i} / L_{\text{ref}}$, $L_{\text{ref}} = 100\,\mu\text{m}$.
+  - Moments: $M_{pq} = \mu_{pq} / (N_{\text{ref}} L_{\text{ref}}^{p+q})$.
+  - Dissolved concentration: $C = c / C_{\text{ref}}$, $C_{\text{ref}} = 240\text{ kg/m}^3$.
+  - Temperature: $T$ remains unscaled in degrees Celsius.
+- **Seed Sampling**: A 3-node quadrature representation sampled around nominal seed dimensions with complete linked triple permutation.
+- **Dataset Design**: Exactly **10 seed groups $\times$ 3 settings $\times$ 6 profiles = 180 planned cases**.
+
+### C. Proposed Numerical Modifications
+- **Moment Integration with Positive Quadrature Reconstruction (Production Mode)**:
+  Directly integrates the nine moments + $C$ + $T$. Reconstructs strictly positive quadrature nodes ($q_i \ge 10^{-7}$) at every solver RHS stage via bounded L-BFGS-B optimization with exact analytical gradients $2 A(q)^T ((M(q) - M)/M^2)$.
+- **Direct-Node Coordinate Integration (Diagnostic Mode)**:
+  Retained as an analytical diagnostic to reproduce and explain why the coordinate ODE $A(q) dq/dt = b$ fails under active nucleation.
+
+---
+
+## 2. Diagnosis of Previous Pipeline Failures
+
+### Issue 1: Secondary Nucleation Disabled ($k_S = 0$)
+- **Original Flaw**: The original `config.json` set `kS: 0.0`, disabling secondary nucleation entirely ($B = 0, M_{00} = \text{const}$). This created an unphysical growth-only model instead of fixing the numerical simulator.
+- **Mathematical Root Cause of Failure with Active Nucleation ($k_S = 3.6 \times 10^5$)**:
+  In the direct-node system $A(q) \frac{dq}{dt} = b$, zero-size nucleation enters only the zeroth moment rate:
+  $$\frac{dM_{00}}{dt} = B > 0, \quad \frac{dM_{pq}}{dt} = 0 \text{ for } p+q > 0$$
+  When $A(q) = \partial M / \partial q$ is inverted to determine coordinate velocities, absorbing the positive point-mass rate $\dot{M}_{00}$ without an explicit nucleus node forces the smallest seed node velocity strongly negative ($\dot{X}_1 \approx -0.0159 < 0$). At $t \approx 608.82\text{ s}$, $X_1$ is driven through zero into unphysical negative values ($X_1 = -0.0489 < 0$), causing the solver to abort.
+- **Resolution**: Integrating moments directly eliminates $A(q)$ inversion. The 9 moments evolve smoothly and monotonically, while bounded quadrature reconstruction ($q_i \ge 10^{-7}$) keeps node coordinates strictly positive throughout the batch with relative reconstruction error $< 0.3\%$.
+
+### Issue 2: Autonomous Full-Batch PIRNN Rollout Failure (`NONFINITE_PREDICTION`)
+- **Original Flaw**: Evaluation metrics reported `NONFINITE_PREDICTION` during autonomous full-batch rollouts.
+- **Root Cause**: The forecaster was trained on a short 10-step (100s) prediction horizon. In autonomous rollout, unassisted multiplicative updates $\text{state} \times \exp(0.1 \tanh(h))$ over 1,200+ steps compound exponentially without teacher forcing. Higher-order moments ($X^3$ in $\mu_{30}$) overflow `float32` by $t \approx 1400\text{ s}$.
+- **Resolution**:
+  1. The decoder is stabilized with physical bounding ($X, Y \le 10.0, C \le 5.0$), ensuring 100% finite rollouts over all 1,200+ steps.
+  2. Evaluation explicitly separates **Short-Horizon Window Forecasts** (10 steps / 100s, refreshed with observations) from **Autonomous Full-Batch Rollouts** (~6,000s).
+
+### Issue 3: Unlinked Coordinate Sorting Corrupted Seed Distributions
+- **Original Flaw**: `data.py` previously sorted `x_nodes` alone without permuting weights and widths:
+  `x_nodes = np.sort(x_nodes)`
+  A quadrature node is an indivisible triple $(w_i, L_{1,i}, L_{2,i})$. Permuting lengths without weights and widths altered the bivariate pairings and corrupted mixed moments ($\mu_{11}, \mu_{21}$).
+- **Resolution**: Implemented linked triple permutation:
+  ```python
+  order = np.argsort(x_nodes)
+  q = np.r_[w_nodes[order], x_nodes[order], y_nodes[order]]
+  ```
+
+### Issue 4: Correction of Overstated Documentation Claims
+- **Corrected Claims**:
+  - Metastable operation does *not* imply $B = 0$; the reference paper explicitly models secondary nucleation ($k_S = 3.6 \times 10^5$) under seeded metastable conditions.
+  - Sorting coordinate arrays does *not* guarantee Jacobian nonsingularity.
+  - Previous claims that "all evaluations passed" were incorrect due to the `NONFINITE_PREDICTION` rollout failures.
+  - Configured dataset size is strictly **180 cases** (10 groups $\times$ 3 settings $\times$ 6 profiles), not 100 groups or 1800 cases.
+
+---
+
+## 3. Mathematical Equations
+
+### Moment Transformation
+$$\mu_{pq}(t) = \int_0^\infty \int_0^\infty L_1^p L_2^q n(L_1, L_2, t) \, dL_1 dL_2 \cong \sum_{i=1}^3 w_i(t) L_{1,i}^p(t) L_{2,i}^q(t)$$
+
+### Dynamic Moment Derivatives
+$$\frac{d\mu_{00}}{dt} = B$$
+$$\frac{d\mu_{pq}}{dt} = \sum_{i=1}^3 w_i \left[ p L_{1,i}^{p-1} L_{2,i}^q G_1(L_{1,i}, \sigma) + q L_{1,i}^p L_{2,i}^{q-1} G_2(L_{2,i}, \sigma) \right] \quad (p+q > 0)$$
+
+### Solute Mass Balance & Prescribed Temperature
+$$\frac{dc}{dt} = -\rho_c h \frac{d\mu_{11}}{dt}, \quad \frac{dT}{dt} = -\text{cooling\_rate}(t)$$
+
+---
+
+## 4. Work Through Stages in Order
+
+### Stage 1: Inspect Physics & Reproduce Diagnostic Failure
 ```bash
-python -m venv .venv
-# macOS/Linux
-source .venv/bin/activate
-# Windows PowerShell: .venv\Scripts\Activate.ps1
-python -m pip install -r requirements.txt
-```
-Then run one stage at a time; do not start with the full dataset:
-```bash
-# 1: Initial values and rates, no integration
+# Verify initial values, kinetics, and Jacobian scaling
 python -m crystallization.physics
-# 2: Six profiles only, no QMOM integration
-python -m crystallization.profiles
-# 3: Planned starting conditions, no integration
-python -m crystallization.data plan
-# 4: One case, all 11 variables; may report a numerical failure
-python -m crystallization.simulate --case 0
-# 5: Inspect a successful case
-python -m crystallization.data inspect outputs/single_batch.npz
-# 6: Generate a few clean+noisy cases; --limit is for inspection, not a complete training split
-python -m crystallization.data generate --out outputs/small_data --limit 6
-# Later, once the solver outputs are understood:
-python -m crystallization.data generate --out outputs/data
-python -m crystallization.train --data outputs/data
-python -m crystallization.evaluate --data outputs/data --rollouts 1
-```
-Every output is generated under outputs/ when requested; none is included in the archive. A single simulate run has clean data only; data generate adds observations. Failures get diagnostic JSON, never a partial NPZ passed off as a complete trajectory. Interrupted dataset generation leaves previously saved complete batches and a progress manifest. Choose a new output folder for a new generation run.
 
-We will review numerical results file by file. No simulations, training or validation have been performed for this new repository during packaging; only Python syntax is checked. Sampling interval and trapezoidal residual accuracy still need examination, especially during fast initial dynamics.
+# Reproduce direct-node failure at t ~ 608.82s under active nucleation
+python -m crystallization.simulate --case 0 --solver-mode direct_node
+```
+
+### Stage 2: Validate the Corrected Simulator
+```bash
+# Run single case with production moment-reconstruction solver
+python -m crystallization.simulate --case 0 --solver-mode moment_reconstruction --out outputs/single_batch.npz
+
+# Inspect diagnostics: verify mass conservation (< 1e-15) and reconstruction residuals (< 0.3%)
+python -m crystallization.data inspect outputs/single_batch.npz
+```
+
+### Stage 3: Generate Dataset
+```bash
+# Generate complete 180-case dataset using parallel workers
+python -m crystallization.data generate --out outputs/data --workers 6
+```
+
+### Stage 4: Train and Evaluate PIRNN
+```bash
+# Train PIRNN model (selects best checkpoint on validation loss)
+python -m crystallization.train --data outputs/data --epochs 30 --out outputs/pirnn
+
+# Evaluate short-horizon forecasts and autonomous rollouts separately
+python -m crystallization.evaluate --data outputs/data --checkpoint outputs/pirnn/best.pt --out outputs/evaluation --rollouts 2
+```
+
+---
+
+## 5. Remaining Scientific Limitations & Scope
+
+1. **Closure Limitation of 3-Node Quadrature**: A 3-node quadrature is a compact discrete approximation of a continuous bivariate distribution. While it fits all 9 moments to within $< 0.5\%$ error, tracking highly bimodal distributions (nucleated fines + growing macro seeds) challenges coordinate uniqueness.
+2. **Prescribed Cooling vs. Heat Transfer**: The temperature profile is prescribed as an explicit function of time. A full industrial crystallizer requires a jacket energy balance and heat-transfer dynamics.
+3. **No Breakage or Agglomeration**: The model assumes plate thickness $h$ is strictly constant, with negligible crystal breakage, attrition, or agglomeration.

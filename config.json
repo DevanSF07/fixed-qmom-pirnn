@@ -9,7 +9,7 @@
     "gamma2": 0.03,
     "alpha1": 0.8,
     "alpha2": 0.9,
-    "kS": 0.0,
+    "kS": 360000.0,
     "epsilon": 250.0,
     "birth_exponent": 2.0,
     "rho": 1665.0,

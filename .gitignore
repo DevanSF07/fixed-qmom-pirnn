@@ -12,6 +12,9 @@ env/
 .DS_Store
 Thumbs.db
 
-# Generated data binaries (reproducible via python -m crystallization.data generate)
+# Generated data binaries (reproducible via pipeline scripts)
 outputs/data/*.npz
+outputs/data_growth_only_diagnostic/
 outputs/small_data/
+outputs/evaluation/*.npz
+outputs/pirnn/*.pt

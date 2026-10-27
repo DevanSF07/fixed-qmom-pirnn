@@ -10,7 +10,7 @@
       "gamma2": 0.03,
       "alpha1": 0.8,
       "alpha2": 0.9,
-      "kS": 0.0,
+      "kS": 360000.0,
       "epsilon": 250.0,
       "birth_exponent": 2.0,
       "rho": 1665.0,
@@ -134,22 +134,28 @@
   "planned": 180,
   "completed": [
     {
-      "file": "g000_s00_linear.npz",
-      "group": 0,
-      "split": "train",
-      "id": "g000_s00_linear"
-    },
-    {
       "file": "g000_s00_cubic.npz",
       "group": 0,
       "split": "train",
       "id": "g000_s00_cubic"
     },
     {
+      "file": "g000_s00_linear.npz",
+      "group": 0,
+      "split": "train",
+      "id": "g000_s00_linear"
+    },
+    {
       "file": "g000_s00_natural.npz",
       "group": 0,
       "split": "train",
       "id": "g000_s00_natural"
+    },
+    {
+      "file": "g000_s00_random_spline.npz",
+      "group": 0,
+      "split": "train",
+      "id": "g000_s00_random_spline"
     },
     {
       "file": "g000_s00_two_stage.npz",
@@ -164,18 +170,6 @@
       "id": "g000_s00_cool_hold_cool"
     },
     {
-      "file": "g000_s00_random_spline.npz",
-      "group": 0,
-      "split": "train",
-      "id": "g000_s00_random_spline"
-    },
-    {
-      "file": "g000_s01_linear.npz",
-      "group": 0,
-      "split": "train",
-      "id": "g000_s01_linear"
-    },
-    {
       "file": "g000_s01_cubic.npz",
       "group": 0,
       "split": "train",
@@ -186,6 +180,12 @@
       "group": 0,
       "split": "train",
       "id": "g000_s01_natural"
+    },
+    {
+      "file": "g000_s01_linear.npz",
+      "group": 0,
+      "split": "train",
+      "id": "g000_s01_linear"
     },
     {
       "file": "g000_s01_two_stage.npz",
@@ -206,12 +206,6 @@
       "id": "g000_s01_random_spline"
     },
     {
-      "file": "g000_s02_linear.npz",
-      "group": 0,
-      "split": "train",
-      "id": "g000_s02_linear"
-    },
-    {
       "file": "g000_s02_cubic.npz",
       "group": 0,
       "split": "train",
@@ -222,6 +216,18 @@
       "group": 0,
       "split": "train",
       "id": "g000_s02_natural"
+    },
+    {
+      "file": "g000_s02_random_spline.npz",
+      "group": 0,
+      "split": "train",
+      "id": "g000_s02_random_spline"
+    },
+    {
+      "file": "g000_s02_linear.npz",
+      "group": 0,
+      "split": "train",
+      "id": "g000_s02_linear"
     },
     {
       "file": "g000_s02_two_stage.npz",
@@ -236,22 +242,16 @@
       "id": "g000_s02_cool_hold_cool"
     },
     {
-      "file": "g000_s02_random_spline.npz",
-      "group": 0,
-      "split": "train",
-      "id": "g000_s02_random_spline"
+      "file": "g001_s00_cubic.npz",
+      "group": 1,
+      "split": "test",
+      "id": "g001_s00_cubic"
     },
     {
       "file": "g001_s00_linear.npz",
       "group": 1,
       "split": "test",
       "id": "g001_s00_linear"
-    },
-    {
-      "file": "g001_s00_cubic.npz",
-      "group": 1,
-      "split": "test",
-      "id": "g001_s00_cubic"
     },
     {
       "file": "g001_s00_natural.npz",
@@ -266,28 +266,28 @@
       "id": "g001_s00_two_stage"
     },
     {
-      "file": "g001_s00_cool_hold_cool.npz",
-      "group": 1,
-      "split": "test",
-      "id": "g001_s00_cool_hold_cool"
-    },
-    {
-      "file": "g001_s00_random_spline.npz",
-      "group": 1,
-      "split": "test",
-      "id": "g001_s00_random_spline"
-    },
-    {
       "file": "g001_s01_linear.npz",
       "group": 1,
       "split": "test",
       "id": "g001_s01_linear"
     },
     {
+      "file": "g001_s00_cool_hold_cool.npz",
+      "group": 1,
+      "split": "test",
+      "id": "g001_s00_cool_hold_cool"
+    },
+    {
       "file": "g001_s01_cubic.npz",
       "group": 1,
       "split": "test",
       "id": "g001_s01_cubic"
+    },
+    {
+      "file": "g001_s00_random_spline.npz",
+      "group": 1,
+      "split": "test",
+      "id": "g001_s00_random_spline"
     },
     {
       "file": "g001_s01_natural.npz",
@@ -302,16 +302,16 @@
       "id": "g001_s01_two_stage"
     },
     {
-      "file": "g001_s01_cool_hold_cool.npz",
-      "group": 1,
-      "split": "test",
-      "id": "g001_s01_cool_hold_cool"
-    },
-    {
       "file": "g001_s01_random_spline.npz",
       "group": 1,
       "split": "test",
       "id": "g001_s01_random_spline"
+    },
+    {
+      "file": "g001_s01_cool_hold_cool.npz",
+      "group": 1,
+      "split": "test",
+      "id": "g001_s01_cool_hold_cool"
     },
     {
       "file": "g001_s02_linear.npz",
@@ -344,12 +344,6 @@
       "id": "g001_s02_cool_hold_cool"
     },
     {
-      "file": "g001_s02_random_spline.npz",
-      "group": 1,
-      "split": "test",
-      "id": "g001_s02_random_spline"
-    },
-    {
       "file": "g002_s00_linear.npz",
       "group": 2,
       "split": "train",
@@ -362,22 +356,16 @@
       "id": "g002_s00_cubic"
     },
     {
-      "file": "g002_s00_natural.npz",
-      "group": 2,
-      "split": "train",
-      "id": "g002_s00_natural"
-    },
-    {
       "file": "g002_s00_two_stage.npz",
       "group": 2,
       "split": "train",
       "id": "g002_s00_two_stage"
     },
     {
-      "file": "g002_s00_cool_hold_cool.npz",
+      "file": "g002_s00_natural.npz",
       "group": 2,
       "split": "train",
-      "id": "g002_s00_cool_hold_cool"
+      "id": "g002_s00_natural"
     },
     {
       "file": "g002_s00_random_spline.npz",
@@ -386,16 +374,16 @@
       "id": "g002_s00_random_spline"
     },
     {
-      "file": "g002_s01_linear.npz",
-      "group": 2,
-      "split": "train",
-      "id": "g002_s01_linear"
-    },
-    {
       "file": "g002_s01_cubic.npz",
       "group": 2,
       "split": "train",
       "id": "g002_s01_cubic"
+    },
+    {
+      "file": "g002_s01_linear.npz",
+      "group": 2,
+      "split": "train",
+      "id": "g002_s01_linear"
     },
     {
       "file": "g002_s01_natural.npz",
@@ -410,6 +398,24 @@
       "id": "g002_s01_two_stage"
     },
     {
+      "file": "g002_s02_linear.npz",
+      "group": 2,
+      "split": "train",
+      "id": "g002_s02_linear"
+    },
+    {
+      "file": "g002_s00_cool_hold_cool.npz",
+      "group": 2,
+      "split": "train",
+      "id": "g002_s00_cool_hold_cool"
+    },
+    {
+      "file": "g002_s02_cubic.npz",
+      "group": 2,
+      "split": "train",
+      "id": "g002_s02_cubic"
+    },
+    {
       "file": "g002_s01_cool_hold_cool.npz",
       "group": 2,
       "split": "train",
@@ -422,18 +428,6 @@
       "id": "g002_s01_random_spline"
     },
     {
-      "file": "g002_s02_linear.npz",
-      "group": 2,
-      "split": "train",
-      "id": "g002_s02_linear"
-    },
-    {
-      "file": "g002_s02_cubic.npz",
-      "group": 2,
-      "split": "train",
-      "id": "g002_s02_cubic"
-    },
-    {
       "file": "g002_s02_natural.npz",
       "group": 2,
       "split": "train",
@@ -444,18 +438,6 @@
       "group": 2,
       "split": "train",
       "id": "g002_s02_two_stage"
-    },
-    {
-      "file": "g002_s02_cool_hold_cool.npz",
-      "group": 2,
-      "split": "train",
-      "id": "g002_s02_cool_hold_cool"
-    },
-    {
-      "file": "g002_s02_random_spline.npz",
-      "group": 2,
-      "split": "train",
-      "id": "g002_s02_random_spline"
     },
     {
       "file": "g003_s00_linear.npz",
@@ -476,16 +458,28 @@
       "id": "g003_s00_natural"
     },
     {
+      "file": "g002_s02_cool_hold_cool.npz",
+      "group": 2,
+      "split": "train",
+      "id": "g002_s02_cool_hold_cool"
+    },
+    {
+      "file": "g002_s02_random_spline.npz",
+      "group": 2,
+      "split": "train",
+      "id": "g002_s02_random_spline"
+    },
+    {
       "file": "g003_s00_two_stage.npz",
       "group": 3,
       "split": "train",
       "id": "g003_s00_two_stage"
     },
     {
-      "file": "g003_s00_cool_hold_cool.npz",
+      "file": "g003_s01_linear.npz",
       "group": 3,
       "split": "train",
-      "id": "g003_s00_cool_hold_cool"
+      "id": "g003_s01_linear"
     },
     {
       "file": "g003_s00_random_spline.npz",
@@ -494,10 +488,10 @@
       "id": "g003_s00_random_spline"
     },
     {
-      "file": "g003_s01_linear.npz",
+      "file": "g003_s00_cool_hold_cool.npz",
       "group": 3,
       "split": "train",
-      "id": "g003_s01_linear"
+      "id": "g003_s00_cool_hold_cool"
     },
     {
       "file": "g003_s01_cubic.npz",
@@ -518,10 +512,10 @@
       "id": "g003_s01_two_stage"
     },
     {
-      "file": "g003_s01_cool_hold_cool.npz",
+      "file": "g003_s02_cubic.npz",
       "group": 3,
       "split": "train",
-      "id": "g003_s01_cool_hold_cool"
+      "id": "g003_s02_cubic"
     },
     {
       "file": "g003_s01_random_spline.npz",
@@ -536,34 +530,22 @@
       "id": "g003_s02_linear"
     },
     {
-      "file": "g003_s02_cubic.npz",
-      "group": 3,
-      "split": "train",
-      "id": "g003_s02_cubic"
-    },
-    {
       "file": "g003_s02_natural.npz",
       "group": 3,
       "split": "train",
       "id": "g003_s02_natural"
     },
     {
+      "file": "g003_s01_cool_hold_cool.npz",
+      "group": 3,
+      "split": "train",
+      "id": "g003_s01_cool_hold_cool"
+    },
+    {
       "file": "g003_s02_two_stage.npz",
       "group": 3,
       "split": "train",
       "id": "g003_s02_two_stage"
-    },
-    {
-      "file": "g003_s02_cool_hold_cool.npz",
-      "group": 3,
-      "split": "train",
-      "id": "g003_s02_cool_hold_cool"
-    },
-    {
-      "file": "g003_s02_random_spline.npz",
-      "group": 3,
-      "split": "train",
-      "id": "g003_s02_random_spline"
     },
     {
       "file": "g004_s00_linear.npz",
@@ -576,6 +558,12 @@
       "group": 4,
       "split": "train",
       "id": "g004_s00_cubic"
+    },
+    {
+      "file": "g003_s02_cool_hold_cool.npz",
+      "group": 3,
+      "split": "train",
+      "id": "g003_s02_cool_hold_cool"
     },
     {
       "file": "g004_s00_natural.npz",
@@ -596,22 +584,16 @@
       "id": "g004_s00_cool_hold_cool"
     },
     {
-      "file": "g004_s00_random_spline.npz",
+      "file": "g004_s01_cubic.npz",
       "group": 4,
       "split": "train",
-      "id": "g004_s00_random_spline"
+      "id": "g004_s01_cubic"
     },
     {
       "file": "g004_s01_linear.npz",
       "group": 4,
       "split": "train",
       "id": "g004_s01_linear"
-    },
-    {
-      "file": "g004_s01_cubic.npz",
-      "group": 4,
-      "split": "train",
-      "id": "g004_s01_cubic"
     },
     {
       "file": "g004_s01_natural.npz",
@@ -626,18 +608,6 @@
       "id": "g004_s01_two_stage"
     },
     {
-      "file": "g004_s01_cool_hold_cool.npz",
-      "group": 4,
-      "split": "train",
-      "id": "g004_s01_cool_hold_cool"
-    },
-    {
-      "file": "g004_s01_random_spline.npz",
-      "group": 4,
-      "split": "train",
-      "id": "g004_s01_random_spline"
-    },
-    {
       "file": "g004_s02_linear.npz",
       "group": 4,
       "split": "train",
@@ -650,10 +620,22 @@
       "id": "g004_s02_cubic"
     },
     {
+      "file": "g004_s01_cool_hold_cool.npz",
+      "group": 4,
+      "split": "train",
+      "id": "g004_s01_cool_hold_cool"
+    },
+    {
       "file": "g004_s02_natural.npz",
       "group": 4,
       "split": "train",
       "id": "g004_s02_natural"
+    },
+    {
+      "file": "g004_s01_random_spline.npz",
+      "group": 4,
+      "split": "train",
+      "id": "g004_s01_random_spline"
     },
     {
       "file": "g004_s02_two_stage.npz",
@@ -674,12 +656,6 @@
       "id": "g004_s02_random_spline"
     },
     {
-      "file": "g005_s00_linear.npz",
-      "group": 5,
-      "split": "train",
-      "id": "g005_s00_linear"
-    },
-    {
       "file": "g005_s00_cubic.npz",
       "group": 5,
       "split": "train",
@@ -692,16 +668,16 @@
       "id": "g005_s00_natural"
     },
     {
+      "file": "g005_s00_linear.npz",
+      "group": 5,
+      "split": "train",
+      "id": "g005_s00_linear"
+    },
+    {
       "file": "g005_s00_two_stage.npz",
       "group": 5,
       "split": "train",
       "id": "g005_s00_two_stage"
-    },
-    {
-      "file": "g005_s00_cool_hold_cool.npz",
-      "group": 5,
-      "split": "train",
-      "id": "g005_s00_cool_hold_cool"
     },
     {
       "file": "g005_s00_random_spline.npz",
@@ -710,16 +686,10 @@
       "id": "g005_s00_random_spline"
     },
     {
-      "file": "g005_s01_linear.npz",
+      "file": "g005_s00_cool_hold_cool.npz",
       "group": 5,
       "split": "train",
-      "id": "g005_s01_linear"
-    },
-    {
-      "file": "g005_s01_cubic.npz",
-      "group": 5,
-      "split": "train",
-      "id": "g005_s01_cubic"
+      "id": "g005_s00_cool_hold_cool"
     },
     {
       "file": "g005_s01_natural.npz",
@@ -728,28 +698,22 @@
       "id": "g005_s01_natural"
     },
     {
+      "file": "g005_s01_cubic.npz",
+      "group": 5,
+      "split": "train",
+      "id": "g005_s01_cubic"
+    },
+    {
+      "file": "g005_s01_linear.npz",
+      "group": 5,
+      "split": "train",
+      "id": "g005_s01_linear"
+    },
+    {
       "file": "g005_s01_two_stage.npz",
       "group": 5,
       "split": "train",
       "id": "g005_s01_two_stage"
-    },
-    {
-      "file": "g005_s01_cool_hold_cool.npz",
-      "group": 5,
-      "split": "train",
-      "id": "g005_s01_cool_hold_cool"
-    },
-    {
-      "file": "g005_s01_random_spline.npz",
-      "group": 5,
-      "split": "train",
-      "id": "g005_s01_random_spline"
-    },
-    {
-      "file": "g005_s02_linear.npz",
-      "group": 5,
-      "split": "train",
-      "id": "g005_s02_linear"
     },
     {
       "file": "g005_s02_cubic.npz",
@@ -764,22 +728,40 @@
       "id": "g005_s02_natural"
     },
     {
+      "file": "g005_s02_linear.npz",
+      "group": 5,
+      "split": "train",
+      "id": "g005_s02_linear"
+    },
+    {
+      "file": "g005_s01_cool_hold_cool.npz",
+      "group": 5,
+      "split": "train",
+      "id": "g005_s01_cool_hold_cool"
+    },
+    {
+      "file": "g005_s01_random_spline.npz",
+      "group": 5,
+      "split": "train",
+      "id": "g005_s01_random_spline"
+    },
+    {
       "file": "g005_s02_two_stage.npz",
       "group": 5,
       "split": "train",
       "id": "g005_s02_two_stage"
     },
     {
-      "file": "g005_s02_cool_hold_cool.npz",
-      "group": 5,
-      "split": "train",
-      "id": "g005_s02_cool_hold_cool"
-    },
-    {
       "file": "g005_s02_random_spline.npz",
       "group": 5,
       "split": "train",
       "id": "g005_s02_random_spline"
+    },
+    {
+      "file": "g005_s02_cool_hold_cool.npz",
+      "group": 5,
+      "split": "train",
+      "id": "g005_s02_cool_hold_cool"
     },
     {
       "file": "g006_s00_linear.npz",
@@ -842,12 +824,6 @@
       "id": "g006_s01_two_stage"
     },
     {
-      "file": "g006_s01_cool_hold_cool.npz",
-      "group": 6,
-      "split": "train",
-      "id": "g006_s01_cool_hold_cool"
-    },
-    {
       "file": "g006_s01_random_spline.npz",
       "group": 6,
       "split": "train",
@@ -858,6 +834,12 @@
       "group": 6,
       "split": "train",
       "id": "g006_s02_linear"
+    },
+    {
+      "file": "g006_s01_cool_hold_cool.npz",
+      "group": 6,
+      "split": "train",
+      "id": "g006_s01_cool_hold_cool"
     },
     {
       "file": "g006_s02_cubic.npz",
@@ -878,16 +860,16 @@
       "id": "g006_s02_two_stage"
     },
     {
-      "file": "g006_s02_cool_hold_cool.npz",
-      "group": 6,
-      "split": "train",
-      "id": "g006_s02_cool_hold_cool"
-    },
-    {
       "file": "g006_s02_random_spline.npz",
       "group": 6,
       "split": "train",
       "id": "g006_s02_random_spline"
+    },
+    {
+      "file": "g007_s00_cubic.npz",
+      "group": 7,
+      "split": "train",
+      "id": "g007_s00_cubic"
     },
     {
       "file": "g007_s00_linear.npz",
@@ -896,10 +878,10 @@
       "id": "g007_s00_linear"
     },
     {
-      "file": "g007_s00_cubic.npz",
-      "group": 7,
+      "file": "g006_s02_cool_hold_cool.npz",
+      "group": 6,
       "split": "train",
-      "id": "g007_s00_cubic"
+      "id": "g006_s02_cool_hold_cool"
     },
     {
       "file": "g007_s00_natural.npz",
@@ -914,10 +896,10 @@
       "id": "g007_s00_two_stage"
     },
     {
-      "file": "g007_s00_cool_hold_cool.npz",
+      "file": "g007_s01_linear.npz",
       "group": 7,
       "split": "train",
-      "id": "g007_s00_cool_hold_cool"
+      "id": "g007_s01_linear"
     },
     {
       "file": "g007_s00_random_spline.npz",
@@ -926,10 +908,10 @@
       "id": "g007_s00_random_spline"
     },
     {
-      "file": "g007_s01_linear.npz",
+      "file": "g007_s00_cool_hold_cool.npz",
       "group": 7,
       "split": "train",
-      "id": "g007_s01_linear"
+      "id": "g007_s00_cool_hold_cool"
     },
     {
       "file": "g007_s01_cubic.npz",
@@ -950,18 +932,6 @@
       "id": "g007_s01_two_stage"
     },
     {
-      "file": "g007_s01_cool_hold_cool.npz",
-      "group": 7,
-      "split": "train",
-      "id": "g007_s01_cool_hold_cool"
-    },
-    {
-      "file": "g007_s01_random_spline.npz",
-      "group": 7,
-      "split": "train",
-      "id": "g007_s01_random_spline"
-    },
-    {
       "file": "g007_s02_linear.npz",
       "group": 7,
       "split": "train",
@@ -978,6 +948,18 @@
       "group": 7,
       "split": "train",
       "id": "g007_s02_natural"
+    },
+    {
+      "file": "g007_s01_random_spline.npz",
+      "group": 7,
+      "split": "train",
+      "id": "g007_s01_random_spline"
+    },
+    {
+      "file": "g007_s01_cool_hold_cool.npz",
+      "group": 7,
+      "split": "train",
+      "id": "g007_s01_cool_hold_cool"
     },
     {
       "file": "g007_s02_two_stage.npz",
@@ -998,16 +980,16 @@
       "id": "g007_s02_random_spline"
     },
     {
-      "file": "g008_s00_linear.npz",
-      "group": 8,
-      "split": "test",
-      "id": "g008_s00_linear"
-    },
-    {
       "file": "g008_s00_cubic.npz",
       "group": 8,
       "split": "test",
       "id": "g008_s00_cubic"
+    },
+    {
+      "file": "g008_s00_linear.npz",
+      "group": 8,
+      "split": "test",
+      "id": "g008_s00_linear"
     },
     {
       "file": "g008_s00_natural.npz",
@@ -1034,16 +1016,16 @@
       "id": "g008_s00_random_spline"
     },
     {
-      "file": "g008_s01_linear.npz",
-      "group": 8,
-      "split": "test",
-      "id": "g008_s01_linear"
-    },
-    {
       "file": "g008_s01_cubic.npz",
       "group": 8,
       "split": "test",
       "id": "g008_s01_cubic"
+    },
+    {
+      "file": "g008_s01_linear.npz",
+      "group": 8,
+      "split": "test",
+      "id": "g008_s01_linear"
     },
     {
       "file": "g008_s01_natural.npz",
@@ -1058,28 +1040,28 @@
       "id": "g008_s01_two_stage"
     },
     {
-      "file": "g008_s01_cool_hold_cool.npz",
-      "group": 8,
-      "split": "test",
-      "id": "g008_s01_cool_hold_cool"
-    },
-    {
       "file": "g008_s01_random_spline.npz",
       "group": 8,
       "split": "test",
       "id": "g008_s01_random_spline"
     },
     {
-      "file": "g008_s02_linear.npz",
+      "file": "g008_s01_cool_hold_cool.npz",
       "group": 8,
       "split": "test",
-      "id": "g008_s02_linear"
+      "id": "g008_s01_cool_hold_cool"
     },
     {
       "file": "g008_s02_cubic.npz",
       "group": 8,
       "split": "test",
       "id": "g008_s02_cubic"
+    },
+    {
+      "file": "g008_s02_linear.npz",
+      "group": 8,
+      "split": "test",
+      "id": "g008_s02_linear"
     },
     {
       "file": "g008_s02_natural.npz",
@@ -1094,18 +1076,6 @@
       "id": "g008_s02_two_stage"
     },
     {
-      "file": "g008_s02_cool_hold_cool.npz",
-      "group": 8,
-      "split": "test",
-      "id": "g008_s02_cool_hold_cool"
-    },
-    {
-      "file": "g008_s02_random_spline.npz",
-      "group": 8,
-      "split": "test",
-      "id": "g008_s02_random_spline"
-    },
-    {
       "file": "g009_s00_linear.npz",
       "group": 9,
       "split": "val",
@@ -1116,6 +1086,18 @@
       "group": 9,
       "split": "val",
       "id": "g009_s00_cubic"
+    },
+    {
+      "file": "g008_s02_random_spline.npz",
+      "group": 8,
+      "split": "test",
+      "id": "g008_s02_random_spline"
+    },
+    {
+      "file": "g008_s02_cool_hold_cool.npz",
+      "group": 8,
+      "split": "test",
+      "id": "g008_s02_cool_hold_cool"
     },
     {
       "file": "g009_s00_natural.npz",
@@ -1130,6 +1112,24 @@
       "id": "g009_s00_two_stage"
     },
     {
+      "file": "g009_s01_cubic.npz",
+      "group": 9,
+      "split": "val",
+      "id": "g009_s01_cubic"
+    },
+    {
+      "file": "g009_s01_linear.npz",
+      "group": 9,
+      "split": "val",
+      "id": "g009_s01_linear"
+    },
+    {
+      "file": "g009_s01_natural.npz",
+      "group": 9,
+      "split": "val",
+      "id": "g009_s01_natural"
+    },
+    {
       "file": "g009_s00_cool_hold_cool.npz",
       "group": 9,
       "split": "val",
@@ -1142,34 +1142,10 @@
       "id": "g009_s00_random_spline"
     },
     {
-      "file": "g009_s01_linear.npz",
-      "group": 9,
-      "split": "val",
-      "id": "g009_s01_linear"
-    },
-    {
-      "file": "g009_s01_cubic.npz",
-      "group": 9,
-      "split": "val",
-      "id": "g009_s01_cubic"
-    },
-    {
-      "file": "g009_s01_natural.npz",
-      "group": 9,
-      "split": "val",
-      "id": "g009_s01_natural"
-    },
-    {
       "file": "g009_s01_two_stage.npz",
       "group": 9,
       "split": "val",
       "id": "g009_s01_two_stage"
-    },
-    {
-      "file": "g009_s01_cool_hold_cool.npz",
-      "group": 9,
-      "split": "val",
-      "id": "g009_s01_cool_hold_cool"
     },
     {
       "file": "g009_s01_random_spline.npz",
@@ -1184,22 +1160,28 @@
       "id": "g009_s02_linear"
     },
     {
+      "file": "g009_s01_cool_hold_cool.npz",
+      "group": 9,
+      "split": "val",
+      "id": "g009_s01_cool_hold_cool"
+    },
+    {
       "file": "g009_s02_cubic.npz",
       "group": 9,
       "split": "val",
       "id": "g009_s02_cubic"
     },
     {
-      "file": "g009_s02_natural.npz",
-      "group": 9,
-      "split": "val",
-      "id": "g009_s02_natural"
-    },
-    {
       "file": "g009_s02_two_stage.npz",
       "group": 9,
       "split": "val",
       "id": "g009_s02_two_stage"
+    },
+    {
+      "file": "g009_s02_natural.npz",
+      "group": 9,
+      "split": "val",
+      "id": "g009_s02_natural"
     },
     {
       "file": "g009_s02_cool_hold_cool.npz",
@@ -1214,5 +1196,207 @@
       "id": "g009_s02_random_spline"
     }
   ],
-  "failed": []
+  "failed": [
+    {
+      "id": "g001_s02_random_spline",
+      "group": 1,
+      "split": "test",
+      "case": {
+        "id": "g001_s02_random_spline",
+        "index": 35,
+        "group": 1,
+        "setting": 2,
+        "split": "test",
+        "Th_C": 30.349191309413538,
+        "Ts_C": 29.8707815279903,
+        "Tf_C": 25.0,
+        "c0_kg_m3": 116.94113729965129,
+        "sigma0": 0.0645651439858661,
+        "seed_mass_fraction": 0.01098508239855188,
+        "average_cooling_rate_C_s": 0.000667230346300041,
+        "initial_state11_scaled": [
+          0.019587339871708166,
+          0.0831102023365696,
+          0.16287814410609772,
+          0.8406034131201376,
+          0.8863605324213779,
+          1.0481246989950406,
+          0.6334991468335195,
+          0.5862662626301054,
+          0.5898016302651293,
+          0.487254738748547,
+          29.8707815279903
+        ],
+        "profile": {
+          "family": "random_spline",
+          "duration": 7300.0,
+          "start": 29.8707815279903,
+          "end": 25.0,
+          "knots": [
+            0.0,
+            0.5503724852256036,
+            0.802673861495214,
+            0.8051627577935421,
+            0.9402197024152449,
+            1.0
+          ],
+          "values": [
+            0.0,
+            0.40544342930006677,
+            0.5101352698968915,
+            0.7234904673857426,
+            0.9171176056795524,
+            1.0
+          ],
+          "curvature": 1.042910579902705,
+          "switch": 0.3836230634408966,
+          "drop_fraction": 0.5150529817803567,
+          "hold_start": 0.23275026085165917,
+          "hold_end": 0.3659316344269659
+        }
+      },
+      "failure": {
+        "message": "Reconstruction error (7.1377e-02) exceeded limit (0.05)",
+        "time_s": 5882.805543770459,
+        "reconstruction_error": 0.0713769641816409,
+        "moments": [
+          0.43331728756144694,
+          4.129840665653911,
+          0.38859636085095023,
+          51.18472313220173,
+          4.944276063260305,
+          0.48593338518767754,
+          659.7462334354561,
+          0.6369938770247838,
+          64.55141893224933
+        ]
+      }
+    },
+    {
+      "id": "g003_s02_random_spline",
+      "group": 3,
+      "split": "train",
+      "case": {
+        "id": "g003_s02_random_spline",
+        "index": 71,
+        "group": 3,
+        "setting": 2,
+        "split": "train",
+        "Th_C": 30.26687338615754,
+        "Ts_C": 29.913960260945455,
+        "Tf_C": 25.0,
+        "c0_kg_m3": 115.67182850790829,
+        "sigma0": 0.04717168870559707,
+        "seed_mass_fraction": 0.027477769958076027,
+        "average_cooling_rate_C_s": 0.000743413050067391,
+        "initial_state11_scaled": [
+          0.04662585021927296,
+          0.13689418532504746,
+          0.3927911227819289,
+          0.9140274674538472,
+          1.0281045877181432,
+          1.2527941033740637,
+          0.5859819917744017,
+          0.5904819120008822,
+          0.5562274179531637,
+          0.4819659521162845,
+          29.913960260945455
+        ],
+        "profile": {
+          "family": "random_spline",
+          "duration": 6610.0,
+          "start": 29.913960260945455,
+          "end": 25.0,
+          "knots": [
+            0.0,
+            0.808990597185781,
+            0.8714046517299824,
+            0.8814870495486556,
+            0.9303839876881052,
+            1.0
+          ],
+          "values": [
+            0.0,
+            0.2259215204366056,
+            0.45678849964624446,
+            0.6871333936459297,
+            0.8466024134202614,
+            1.0
+          ],
+          "curvature": 3.1781936081653583,
+          "switch": 0.4959297024369851,
+          "drop_fraction": 0.5793215000689175,
+          "hold_start": 0.26682225339175114,
+          "hold_end": 0.4156632535449288
+        }
+      },
+      "failure": {
+        "message": "Temperature integration mismatch",
+        "max_error_C": 0.056292656016964315
+      }
+    },
+    {
+      "id": "g004_s00_random_spline",
+      "group": 4,
+      "split": "train",
+      "case": {
+        "id": "g004_s00_random_spline",
+        "index": 77,
+        "group": 4,
+        "setting": 0,
+        "split": "train",
+        "Th_C": 29.27949418421175,
+        "Ts_C": 29.0450421968,
+        "Tf_C": 25.0,
+        "c0_kg_m3": 101.9832848235539,
+        "sigma0": 0.02887109303533708,
+        "seed_mass_fraction": 0.013353990393555618,
+        "average_cooling_rate_C_s": 0.0010786779191466669,
+        "initial_state11_scaled": [
+          0.0188408137115944,
+          0.08425450409399061,
+          0.13428646095171676,
+          0.9032316173150278,
+          1.0052726439842399,
+          1.1072679873400295,
+          0.6272250331072968,
+          0.6284248460848375,
+          0.6704434403519292,
+          0.4249303534314746,
+          29.0450421968
+        ],
+        "profile": {
+          "family": "random_spline",
+          "duration": 3750.0,
+          "start": 29.0450421968,
+          "end": 25.0,
+          "knots": [
+            0.0,
+            0.15701931323056445,
+            0.2375414072915135,
+            0.24727029483076907,
+            0.7263417295142564,
+            1.0
+          ],
+          "values": [
+            0.0,
+            0.09875723143964767,
+            0.23470215383143458,
+            0.3702580018597804,
+            0.7725506761451616,
+            1.0
+          ],
+          "curvature": 4.009315657734211,
+          "switch": 0.5016714417563255,
+          "drop_fraction": 0.65015959276894,
+          "hold_start": 0.2929359275714659,
+          "hold_end": 0.4665167956158294
+        }
+      },
+      "failure": {
+        "message": "Temperature integration mismatch",
+        "max_error_C": 0.06293107933347031
+      }
+    }
+  ]
 }
