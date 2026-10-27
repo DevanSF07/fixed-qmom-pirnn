@@ -1,0 +1,132 @@
+{
+  "random_seed": 42,
+  "physics": {
+    "k1": 0.001178,
+    "k2": 0.0001874,
+    "g1": 1.5,
+    "g2": 1.7,
+    "gamma1": 0.05,
+    "gamma2": 0.03,
+    "alpha1": 0.8,
+    "alpha2": 0.9,
+    "kS": 0.0,
+    "epsilon": 250.0,
+    "birth_exponent": 2.0,
+    "rho": 1665.0,
+    "thickness": 5e-06,
+    "a1": -69.51,
+    "a2": 368.6,
+    "a3": 16.18
+  },
+  "moments": [
+    [
+      0,
+      0
+    ],
+    [
+      1,
+      0
+    ],
+    [
+      0,
+      1
+    ],
+    [
+      2,
+      0
+    ],
+    [
+      1,
+      1
+    ],
+    [
+      0,
+      2
+    ],
+    [
+      3,
+      0
+    ],
+    [
+      0,
+      3
+    ],
+    [
+      2,
+      1
+    ]
+  ],
+  "design": {
+    "seed_groups": 10,
+    "settings_per_group": 3,
+    "seeding_temperature_C": [
+      29.0,
+      35.0
+    ],
+    "hot_offset_C": [
+      0.1,
+      0.5
+    ],
+    "final_temperature_C": 25.0,
+    "mean_cooling_rate_factor": [
+      0.5,
+      1.5
+    ],
+    "reference_cooling_rate_C_s": 0.000833,
+    "seed_mass_fraction": [
+      0.01,
+      0.03
+    ],
+    "node_length_factors": [
+      0.85,
+      1.15
+    ],
+    "node_width_factors": [
+      0.85,
+      1.15
+    ],
+    "relative_weight_factors": [
+      0.7,
+      1.3
+    ]
+  },
+  "profiles": [
+    "linear",
+    "cubic",
+    "natural",
+    "two_stage",
+    "cool_hold_cool",
+    "random_spline"
+  ],
+  "solver": {
+    "sample_interval_s": 10.0,
+    "method": "RK45",
+    "rtol": 1e-06,
+    "atol": 1e-09,
+    "max_step_s": 60.0,
+    "condition_limit": 100000000000.0
+  },
+  "noise": {
+    "temperature_std_C": 0.1,
+    "concentration_std_kg_m3": 0.3,
+    "node_length_cv": 0.02,
+    "node_width_cv": 0.02,
+    "node_weight_cv": 0.05
+  },
+  "split": {
+    "train": 0.7,
+    "val": 0.15,
+    "test": 0.15
+  },
+  "training": {
+    "history": 5,
+    "horizon": 10,
+    "hidden": 48,
+    "batch_size": 64,
+    "epochs": 30,
+    "learning_rate": 0.001,
+    "physics_weight": 1.0,
+    "mass_weight": 1.0,
+    "gradient_clip": 1.0
+  }
+}
