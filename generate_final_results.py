@@ -263,17 +263,10 @@ def cleanup_others(root_dir):
     root = Path(root_dir)
     to_remove_dirs = [
         root / "outputs" / "data_growth_only_diagnostic",
+        root / "outputs" / "evaluation",
     ]
     to_remove_files = [
         root / "outputs" / "single_batch.npz",
-        root / "outputs" / "evaluation" / "g001_s00_cubic.npz",
-        root / "outputs" / "evaluation" / "g001_s00_linear.npz",
-        root / "outputs" / "evaluation" / "g001_s00_natural.npz",
-        root / "outputs" / "evaluation" / "g001_s00_two_stage.npz",
-        root / "outputs" / "evaluation" / "g001_s00_cubic.png",
-        root / "outputs" / "evaluation" / "g001_s00_linear.png",
-        root / "outputs" / "evaluation" / "g001_s00_natural.png",
-        root / "outputs" / "evaluation" / "g001_s00_two_stage.png",
     ]
     for d in to_remove_dirs:
         if d.exists() and d.is_dir():

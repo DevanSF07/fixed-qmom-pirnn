@@ -131,14 +131,30 @@ python -m crystallization.data inspect outputs/single_batch.npz
 PYTHONPATH=. python /Users/devansinghfaujdar/.gemini/antigravity-ide/brain/2c7aa8a1-c6ef-435c-a15f-14b113da10ef/scratch/verify_dataset.py
 ```
 
-### Stage 4: Train and Evaluate PIRNN
+### Stage 4: Train PIRNN & Generate Final Deliverables
 ```bash
-# Train PIRNN model (records architecture and manifest SHA-256 in checkpoint)
+# 1. Train PIRNN model with weighted mu00 and moment-ratio shape loss:
 python -m crystallization.train --data outputs/data --epochs 30 --out outputs/pirnn
 
-# Evaluate short-horizon forecasts and autonomous rollouts separately
-python -m crystallization.evaluate --data outputs/data --checkpoint outputs/pirnn/best.pt --out outputs/evaluation --rollouts 4
+# 2. Generate clean deliverables (comparison plot, loss curves, per-feature error analysis):
+python generate_final_results.py
 ```
+
+### Final Validation Performance Across Predicted Features
+Evaluated on all 13,835 validation windows (138,350 total horizon steps) with the selected Epoch 15 checkpoint:
+
+| Feature | Physical Meaning | Normalized RMSE (%) | Normalized MAE (%) | Physical RMSE | Physical Unit |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **$\mu_{00}$** | Total crystal number | **3.81%** | **3.01%** | $1.58 \times 10^{9}$ | $\# / \text{m}^3$ |
+| **$\mu_{10}$** | Length moment $(1,0)$ | **1.78%** | **1.33%** | $1.58 \times 10^{6}$ | $\text{m} / \text{m}^3$ |
+| **$\mu_{01}$** | Width moment $(0,1)$ | **4.17%** | **3.36%** | $2.34 \times 10^{5}$ | $\text{m} / \text{m}^3$ |
+| **$\mu_{20}$** | Moment $(2,0)$ | **1.62%** | **1.14%** | $2.09 \times 10^{3}$ | $\text{m}^2 / \text{m}^3$ |
+| **$\mu_{11}$** | Cross-area moment $(1,1)$ | **1.92%** | **1.41%** | $209.8$ | $\text{m}^2 / \text{m}^3$ |
+| **$\mu_{02}$** | Moment $(0,2)$ | **3.51%** | **2.82%** | $31.3$ | $\text{m}^2 / \text{m}^3$ |
+| **$\mu_{30}$** | Moment $(3,0)$ | **2.14%** | **1.42%** | $3.90$ | $\text{m}^3 / \text{m}^3$ |
+| **$\mu_{03}$** | Moment $(0,3)$ | **2.71%** | **2.00%** | $3.58 \times 10^{-3}$ | $\text{m}^3 / \text{m}^3$ |
+| **$\mu_{21}$** | Cross-volume moment $(2,1)$| **1.84%** | **1.24%** | $0.30$ | $\text{m}^3 / \text{m}^3$ |
+| **$c$** | Liquid solute conc. | **0.21%** | **0.11%** | **$0.181$** | $\text{kg} / \text{m}^3$ |
 
 ---
 
