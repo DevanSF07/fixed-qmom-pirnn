@@ -102,33 +102,36 @@ def generate_loss_curve_plot(training_json_path, out_dir):
     history = json.loads(Path(training_json_path).read_text())
     epochs = [h["epoch"] for h in history]
     data_loss = [h["data"] for h in history]
+    shape_loss = [h.get("shape", 0.0) for h in history]
     physics_loss = [h["physics"] for h in history]
     mass_loss = [h["mass"] for h in history]
-    val_loss = [h["val_log_mse"] for h in history]
+    val_loss = [h.get("val_loss", h.get("val_log_mse")) for h in history]
     
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6), dpi=200)
     
     # Left: Training Loss Components
-    ax1.plot(epochs, data_loss, marker="o", markersize=4, label="Data Loss (Log MSE)", color="#1f77b4", lw=2.0)
+    ax1.plot(epochs, data_loss, marker="o", markersize=4, label="Data Loss (Weighted Log MSE)", color="#1f77b4", lw=2.0)
+    if any(s > 0 for s in shape_loss):
+        ax1.plot(epochs, shape_loss, marker="^", markersize=4, label="Shape Ratio Loss (Mean Length & Width)", color="#e377c2", lw=2.0)
     ax1.plot(epochs, physics_loss, marker="s", markersize=4, label="Physics Loss (ODE Residual)", color="#2ca02c", lw=2.0)
-    ax1.plot(epochs, mass_loss, marker="^", markersize=4, label="Mass Conservation Loss", color="#ff7f0e", lw=2.0)
+    ax1.plot(epochs, mass_loss, marker="v", markersize=4, label="Mass Conservation Loss", color="#ff7f0e", lw=2.0)
     ax1.set_title("Training Loss Components vs. Epoch", fontsize=12, fontweight="bold")
     ax1.set_xlabel("Epoch", fontsize=11)
     ax1.set_ylabel("Loss Magnitude (Log Scale)", fontsize=11)
     ax1.set_yscale("log")
     ax1.grid(True, linestyle=":", alpha=0.6)
-    ax1.legend(fontsize=10, loc="best", framealpha=0.9)
+    ax1.legend(fontsize=9, loc="best", framealpha=0.9)
     
     # Right: Validation Loss Curve
     best_epoch = int(np.argmin(val_loss)) + 1
     best_val = min(val_loss)
     
-    ax2.plot(epochs, val_loss, marker="D", markersize=4, label="Validation Log MSE", color="#9467bd", lw=2.2)
+    ax2.plot(epochs, val_loss, marker="D", markersize=4, label="Validation Objective", color="#9467bd", lw=2.2)
     ax2.scatter([best_epoch], [best_val], color="#d62728", s=120, zorder=5, label=f"Best Checkpoint (Epoch {best_epoch}, {best_val:.6f})")
     ax2.axvline(best_epoch, color="#d62728", linestyle=":", alpha=0.7)
     ax2.set_title("Validation Loss Curve vs. Epoch", fontsize=12, fontweight="bold")
     ax2.set_xlabel("Epoch", fontsize=11)
-    ax2.set_ylabel("Validation Log MSE", fontsize=11)
+    ax2.set_ylabel("Validation Loss", fontsize=11)
     ax2.set_yscale("log")
     ax2.grid(True, linestyle=":", alpha=0.6)
     ax2.legend(fontsize=10, loc="best", framealpha=0.9)

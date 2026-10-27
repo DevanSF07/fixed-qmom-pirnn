@@ -67,14 +67,17 @@ def train(data='outputs/data',out='outputs/pirnn',config='config.json',epochs=No
         "keys": list(model.state_dict().keys()),
     }
 
+    mu00_w = float(s.get('mu00_weight', 3.0))
+    shape_w = float(s.get('shape_weight', 1.0))
+
     for epoch in range(epochs):
         model.train()
-        sums = dict(data=0., physics=0., mass=0.)
+        sums = dict(data=0., shape=0., physics=0., mass=0.)
         count = 0
         for hist, T, y in DataLoader(tr, batch_size=s['batch_size'], shuffle=True):
             opt.zero_grad()
-            terms = losses(model(hist, T), y, T, tr.dt, par)
-            loss = terms['data'] + s['physics_weight'] * terms['physics'] + s['mass_weight'] * terms['mass']
+            terms = losses(model(hist, T), y, T, tr.dt, par, mu00_weight=mu00_w, shape_weight=shape_w)
+            loss = terms['data'] + shape_w * terms['shape'] + s['physics_weight'] * terms['physics'] + s['mass_weight'] * terms['mass']
             if not torch.isfinite(loss):
                 raise RuntimeError('Nonfinite training loss')
             loss.backward()
@@ -89,11 +92,13 @@ def train(data='outputs/data',out='outputs/pirnn',config='config.json',epochs=No
         n = 0
         with torch.no_grad():
             for hist, T, y in DataLoader(va, batch_size=s['batch_size']):
-                value += losses(model(hist, T), y, T, va.dt, par)['data'].item() * len(hist)
+                val_terms = losses(model(hist, T), y, T, va.dt, par, mu00_weight=mu00_w, shape_weight=shape_w)
+                val_loss = val_terms['data'] + shape_w * val_terms['shape']
+                value += val_loss.item() * len(hist)
                 n += len(hist)
 
         val_score = value / n
-        row = dict(epoch=epoch + 1, **{k: v / count for k, v in sums.items()}, val_log_mse=val_score)
+        row = dict(epoch=epoch + 1, **{k: v / count for k, v in sums.items()}, val_loss=val_score)
         logs.append(row)
         print(json.dumps(row), flush=True)
 
