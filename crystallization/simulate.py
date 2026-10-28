@@ -111,10 +111,12 @@ def reconstruct_quadrature(m_target, q_guess=None, maxiter=300, gtol=1e-8, ftol=
     denom = np.maximum(np.abs(m_target), 1e-12)
 
     def obj(q):
+        """Compute normalized sum-of-squares moment reconstruction error."""
         m_calc = moments(q)
         return float(np.sum(((m_calc - m_target) / denom) ** 2))
 
     def grad(q):
+        """Compute exact analytical gradient using transposed moment Jacobian."""
         m_calc = moments(q)
         res = 2.0 * (m_calc - m_target) / (denom ** 2)
         A = moment_jacobian(q)
@@ -270,6 +272,7 @@ def simulate(
 
         for left, right in zip(boundaries[:-1], boundaries[1:]):
             def rhs_direct(t, z):
+                """Direct coordinate derivatives: solves A(q) dq/dt = b."""
                 nonlocal maxcond
                 try:
                     rate_time = min(t, np.nextafter(right, left))
@@ -345,6 +348,7 @@ def simulate(
 
     for left, right in zip(boundaries[:-1], boundaries[1:]):
         def rhs_moments(t, y):
+            """Evaluate moment rates dM/dt, dC/dt, dT/dt using reconstructed quadrature."""
             nonlocal max_rhs_err, rhs_eval_count
             rhs_eval_count += 1
             m = y[:9]
